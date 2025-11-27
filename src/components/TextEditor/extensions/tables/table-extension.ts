@@ -1,12 +1,7 @@
-
+import Table from '@tiptap/extension-table'
 import { tableBorderMenuPlugin } from './table-border-menu-plugin';
-import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
-// import tableIndividualCellPlugin from './table-individual-cell-plugin'
 
 export const TableExtension = Table.extend({
-  TableRow,
-  TableHeader,
-  TableCell,
   addAttributes() {
     return {
       backgroundColor: {
@@ -47,7 +42,6 @@ export const TableExtension = Table.extend({
     return [
       ...(this.parent?.() ?? []),
       tableBorderMenuPlugin(this.editor),
-      // tableIndividualCellPlugin(this.editor)
     ]
   },
 })
