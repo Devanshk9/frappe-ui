@@ -7,5 +7,16 @@ export function createEditorButton(option) {
   if (typeof option == 'object') {
     return option
   }
-  return commands[option]
+  if (typeof option !== 'string') {
+    return null
+  }
+  const button = commands[option]
+  if (!button) {
+    if (option === 'TableOfContents') {
+      console.error('❌ TableOfContents command not found in commands object!')
+      console.log('Available commands:', Object.keys(commands).slice(0, 20))
+    }
+    return null
+  }
+  return button
 }

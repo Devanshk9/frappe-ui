@@ -27,6 +27,7 @@ import Undo from '~icons/lucide/undo-2'
 import Redo from '~icons/lucide/redo-2'
 import Separator from '~icons/lucide/separator-horizontal'
 import Table from '~icons/lucide/table-properties'
+import TableOfContentsIcon from '~icons/lucide/table-of-contents'
 
 export default {
   Paragraph: {
@@ -288,6 +289,52 @@ export default {
     action: (editor) => editor.chain().focus().toggleHeaderCell().run(),
     isActive: (editor) => false,
     isDisabled: (editor) => !editor.can().toggleHeaderCell(),
+  },
+  TableOfContents: {
+    label: 'Table of Contents',
+    icon: TableOfContentsIcon,
+    action: (editor) => {
+      try {
+        // Try using the command first
+        if (editor.commands.insertTableOfContentsNode) {
+          const result = editor.chain().focus().insertTableOfContentsNode().run()
+          if (!result) {
+            console.warn('⚠️ insertTableOfContentsNode command returned false')
+            throw new Error('Command returned false')
+          }
+        } else {
+          throw new Error('Command not available')
+        }
+      } catch (error) {
+        console.log('⚠️ Command failed, trying fallback method:', error.message)
+        // Fallback: directly insert the node using ProseMirror
+        try {
+          const { state, dispatch } = editor.view
+          const { schema } = state
+          
+          if (!schema.nodes.tocNode) {
+            console.error('❌ tocNode node type not found in schema')
+            console.log('Available nodes:', Object.keys(schema.nodes))
+            console.log('Extension names:', editor.extensionManager.extensions.map(e => e.name))
+            console.log('Looking for tocNode extension:', editor.extensionManager.extensions.find(e => e.name === 'tocNode'))
+            alert('Table of Contents extension is not loaded. Please restart the dev server and hard refresh the browser.')
+            return
+          }
+          
+          const tocNode = schema.nodes.tocNode.create({
+            placeholder: 'Table of Contents',
+          })
+          const tr = state.tr.replaceSelectionWith(tocNode)
+          dispatch(tr)
+          editor.chain().focus().run()
+          console.log('✅ TOC inserted using fallback method')
+        } catch (fallbackError) {
+          console.error('❌ Fallback also failed:', fallbackError)
+          alert('Failed to insert Table of Contents. Check console for details.')
+        }
+      }
+    },
+    isActive: (editor) => editor.isActive('tocNode'),
   },
   Separator: {
     type: 'separator',

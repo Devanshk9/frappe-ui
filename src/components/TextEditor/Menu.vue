@@ -1,10 +1,13 @@
 <template>
   <div class="inline-flex bg-surface-white px-1 py-1">
     <div class="inline-flex items-center gap-1">
-      <template v-for="button in buttons" :key="button.label">
+      <template v-for="(button, index) in buttons" :key="button?.label || button?.type || `btn-${index}`">
+        <template v-if="!button">
+          <!-- Skip null/undefined buttons -->
+        </template>
         <div
           class="h-4 w-[2px] border-l"
-          v-if="button.type === 'separator'"
+          v-else-if="button.type === 'separator'"
         ></div>
         <div class="shrink-0" v-else-if="button.map">
           <Popover>
@@ -81,10 +84,7 @@
               :title="button.label"
             >
               <component v-if="button.icon" :is="button.icon" class="h-4 w-4" />
-              <span
-                class="inline-block h-4 min-w-[1rem] text-sm leading-4"
-                v-else
-              >
+              <span v-else-if="button.text" class="inline-block h-4 min-w-[1rem] text-sm leading-4">
                 {{ button.text }}
               </span>
             </button>

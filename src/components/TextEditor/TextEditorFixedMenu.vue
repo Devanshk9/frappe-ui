@@ -4,6 +4,7 @@
 <script>
 import Menu from './Menu.vue'
 import { createEditorButton } from './utils'
+import commands from './commands'
 
 export default {
   name: 'TextEditorFixedMenu',
@@ -46,6 +47,7 @@ export default {
           'Video',
           'Blockquote',
           'Code',
+          'TableOfContents',
           'Iframe',
           'Separator',
           'Horizontal Rule',
@@ -69,7 +71,24 @@ export default {
           'Redo',
         ]
       }
-      return buttons.map(createEditorButton)
+      const processed = buttons.map(createEditorButton)
+      const filtered = processed.filter(b => b !== null && b !== undefined)
+      
+      // Ensure TableOfContents button is present
+      const hasToc = filtered.some(b => b?.label === 'Table of Contents')
+      if (!hasToc && commands.TableOfContents) {
+        const tocButton = createEditorButton('TableOfContents')
+        if (tocButton) {
+          const codeIndex = filtered.findIndex(b => b?.label === 'Code')
+          if (codeIndex >= 0) {
+            filtered.splice(codeIndex + 1, 0, tocButton)
+          } else {
+            filtered.push(tocButton)
+          }
+        }
+      }
+      
+      return filtered
     },
   },
 }
