@@ -1,6 +1,6 @@
 <template>
   <NodeViewWrapper
-    class="table-of-contents-node my-4 p-4 border border-outline-gray-modals rounded-md bg-surface-gray-1"
+    class="table-of-contents-node my-4"
     contenteditable="false"
   >
     <div class="text-base font-semibold mb-4 text-ink-gray-9 pb-2 border-b border-outline-gray-modals">
